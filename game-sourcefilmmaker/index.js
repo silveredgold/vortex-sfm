@@ -48,7 +48,7 @@ const tools = [
             'uspu.exe'
         ],
         parameters: ['enable-all', GAME_PATH],
-        relative: false,
+        relative: true,
         shell: true,
         exclusive: true
     }
@@ -78,57 +78,19 @@ function installContent(files, destinationPath, gameId, progressDelegate) {
     // var modName = path.basename(destinationPath).split('.').slice(0, -1).join('.');
     //basically need to keep descending until I find [maps/materials/media/models/scripts/settings/sound]
     let root = path.dirname(files.find(f => types.some(t => path.dirname(f).toLowerCase().indexOf(t) !== -1)));
-    let parent = path.dirname(root);
-    log('debug', 'found mod root', { root: root, parent: parent });
-    const instructions = getInstructions(root, parent, files);
-    progressDelegate(50);
-    return Promise.resolve({ instructions });
-}
-
-function getInstructions(root, parent, files) {
-    if (parent !== '.') {
-        const filtered = files.filter(file => ((file.indexOf(root) !== -1) && (!file.endsWith(path.sep))));
-        const instructions = filtered.map(file => {
-            const destination = file.substr(file.toLowerCase().indexOf(root))
-            return {
-                type: 'copy',
-                source: file,
-                destination: destination
-                // destination: file.replace(root, '')
-            }
-        });
-        return instructions;
-    } else {
-        const instructions = files.map(file => {
-            return {
-                type: 'copy',
-                source: file,
-                destination: file
-            }
-        });
-        return instructions;
-    }
-}
-
-// This is not necessary and should *not* be invoked!
-// this code is a holdover from earlier iterations that attempted to add installed mods to the searchPath.
-// search paths are now handled by the standalone SearchPathsUpdater tool
-function addSearchPath(modName) {
-    try {
-        var filePath = path.join(GAME_PATH, 'gameinfo.txt');
-        // fs.copyFile(filePath, path.join(GAME_PATH, 'gameinfo.txt.bak'));
-        log('debug', 'attempting to read GameInfo KV file', { file: filePath });
-        var lines = fs.readFileSync(filePath, 'utf8').split("\n");
-        if (lines.findIndex(l => l.includes(modName)) == -1) {
-            var pathsLine = lines.findIndex(l => l.trim() == "\"SearchPaths\"");
-            lines.splice(pathsLine + 3, 0, lines[pathsLine + 2].replace("|gameinfo_path|.", modName));
-            fs.writeFileSync(filePath, lines.join('\n'))
-        } else {
-            log('debug', 'mod already found in usermod paths!');
+    //root is the first primitive we found (i.e. maps or whatever)
+    const filtered = files.filter(file => ((file.indexOf(root) !== -1) && (!file.endsWith(path.sep))));
+    log('debug', 'filtered non-rooted files', { root: root, candidates: filtered });
+    const instructions = filtered.map(file => {
+        // log('debug', 'mapping file to instruction', { file: file, root: root });
+        const destination = file.substr(root.indexOf(path.basename(root)));
+        return {
+            type: 'copy',
+            source: file,
+            destination: destination
         }
-    } catch {
-        log('warning', 'errors encountered while attempting to enable the mod. You may need to change usermod search paths to enable your mod!')
-    }
+    });
+    return Promise.resolve({ instructions });
 }
 
 module.exports = {

@@ -31,7 +31,7 @@ namespace UpdateSearchPaths
 
         private VProperty GetGameInfo()
         {
-            var info = VdfConvert.Deserialize(File.ReadAllText(_path, Encoding.UTF8));
+            var info = VdfConvert.Deserialize(File.ReadAllText(_path, Encoding.UTF8), VdfSerializerSettings.Common);
             return info;
         }
 
@@ -53,7 +53,7 @@ namespace UpdateSearchPaths
 
         private void WriteGameInfo(VToken info)
         {
-            var updated = VdfConvert.Serialize(info);
+            var updated = VdfConvert.Serialize(info, VdfSerializerSettings.Common);
             File.WriteAllText(_path, updated, Encoding.UTF8);
         }
 

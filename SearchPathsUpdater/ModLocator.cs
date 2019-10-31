@@ -9,7 +9,7 @@ namespace UpdateSearchPaths
     public class ModLocator
     {
         private readonly string _path;
-        private const string ManagedFileName = "_folder_managed_by_vortex";
+        private const string ManagedFileName = "__folder_managed_by_vortex";
         private readonly List<string> _supportedTypes = new List<string> {"materials", "models", "sound", "settings", "maps"};
 
         public ModLocator(string gamePath)

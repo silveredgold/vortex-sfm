@@ -44,7 +44,7 @@ namespace UpdateSearchPaths
             var modNames = (settings.IncludeAll ? locator.FindAllMods() : locator.FindVortexMods()).ToArray();
             if (modNames.Length > 0) {
                 Console.WriteLine($"Enabling SearchPaths for {string.Join(";", modNames)}");
-                writer.EnableGame(modNames);
+                writer.Backup().EnableGame(modNames);
                 return Task.FromResult(0);
             }
             else {
@@ -74,7 +74,7 @@ namespace UpdateSearchPaths
         {
             var writer = new GameInfoWriter(settings.InstallPath);
             Console.WriteLine($"Enabling SearchPath for {settings.ModName}");
-            writer.EnableGame(settings.ModName);
+            writer.Backup().EnableGame(settings.ModName);
             return Task.FromResult(0);
         }
     }
@@ -88,7 +88,7 @@ namespace UpdateSearchPaths
             var modNames = (settings.IncludeAll ? locator.FindAllMods() : locator.FindVortexMods()).ToArray();
             if (modNames.Length > 0) {
                 Console.WriteLine($"Removing SearchPaths for {string.Join(";", modNames)}");
-                writer.DisableGame(modNames);
+                writer.Backup().DisableGame(modNames);
                 return Task.FromResult(0);
             }
             else {
@@ -107,7 +107,7 @@ namespace UpdateSearchPaths
         {
             var writer = new GameInfoWriter(settings.InstallPath);
             Console.WriteLine($"Removing SearchPath for {settings.ModName}");
-            writer.DisableGame(settings.ModName);
+            writer.Backup().DisableGame(settings.ModName);
             return Task.FromResult(0);
         }
     }
