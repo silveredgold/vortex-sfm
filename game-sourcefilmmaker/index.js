@@ -77,13 +77,15 @@ function testSupportedContent(files, gameId) {
 function installContent(files, destinationPath, gameId, progressDelegate) {
     // var modName = path.basename(destinationPath).split('.').slice(0, -1).join('.');
     //basically need to keep descending until I find [maps/materials/media/models/scripts/settings/sound]
-    let root = path.dirname(files.find(f => types.some(t => path.dirname(f).toLowerCase().indexOf(t) !== -1)));
-    //root is the first primitive we found (i.e. maps or whatever)
-    const filtered = files.filter(file => ((file.indexOf(root) !== -1) && (!file.endsWith(path.sep))));
+    let firstType = path.dirname(files.find(f => types.some(t => path.dirname(f).toLowerCase().indexOf(t) !== -1)));
+    let root = path.dirname(firstType);
+    //firstType is the first primitive we found (i.e. maps or whatever)
+    //root is that directory's parent, which might include more than one primitive
+    const filtered = files.filter(file => ((root == "." ? true : (file.indexOf(root) !== -1) && (!file.endsWith(path.sep)))));
     log('debug', 'filtered non-rooted files', { root: root, candidates: filtered });
     const instructions = filtered.map(file => {
         // log('debug', 'mapping file to instruction', { file: file, root: root });
-        const destination = file.substr(root.indexOf(path.basename(root)));
+        const destination = file.substr(firstType.indexOf(path.basename(firstType)));
         return {
             type: 'copy',
             source: file,
