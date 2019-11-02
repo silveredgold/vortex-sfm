@@ -81,7 +81,7 @@ function installContent(files, destinationPath, gameId, progressDelegate) {
     let root = path.dirname(firstType);
     //firstType is the first primitive we found (i.e. maps or whatever)
     //root is that directory's parent, which might include more than one primitive
-    const filtered = files.filter(file => ((root == "." ? true : (file.indexOf(root) !== -1) && (!file.endsWith(path.sep)))));
+    const filtered = files.filter(file => (((root == "." ? true : (file.indexOf(root) !== -1)) && (!file.endsWith(path.sep)))));
     log('debug', 'filtered non-rooted files', { root: root, candidates: filtered });
     const instructions = filtered.map(file => {
         // log('debug', 'mapping file to instruction', { file: file, root: root });
@@ -89,7 +89,8 @@ function installContent(files, destinationPath, gameId, progressDelegate) {
         return {
             type: 'copy',
             source: file,
-            destination: destination
+            // I don't think ⬇ conditional is needed, but frankly it works now and I'm afraid to touch it.
+            destination: root == "." ? file : destination
         }
     });
     return Promise.resolve({ instructions });
