@@ -35,6 +35,9 @@ namespace UpdateSearchPaths
             [CommandOption("--all")]
             [Description("Includes all 'mods', not just Vortex-managed ones")]
             public bool IncludeAll { get; set; }
+
+            // [CommandOption("--formatted")]
+            // [Description("Enabled")]
         }
 
         public override Task<int> ExecuteAsync(CommandContext context, Settings settings)

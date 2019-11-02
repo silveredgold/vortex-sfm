@@ -11,6 +11,7 @@
   <ItemGroup>
     <PackageReference Include="Gameloop.Vdf" Version="0.5.0" />
     <PackageReference Include="Spectre.Cli" Version="0.28.0" />
+    <PackageReference Include="System.Text.Encoding.CodePages" Version="4.6.0" />
   </ItemGroup>
 
 </Project>

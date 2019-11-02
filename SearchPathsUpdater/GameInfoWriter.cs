@@ -15,12 +15,17 @@ namespace UpdateSearchPaths
         private readonly string _gamePath;
         private const string FileName = "GameInfo.txt";
         private readonly string _path;
+        private Encoding Windows1252 {get;} = CodePagesEncodingProvider.Instance.GetEncoding(1252);
+
+        public bool EnableFormatting {get;set;}
 
         public GameInfoWriter(string gamePath)
         {
             _gamePath = gamePath;
             _path = Combine(gamePath, "game", "usermod", FileName);
         }
+
+        
 
         public GameInfoWriter Backup()
         {
@@ -31,7 +36,8 @@ namespace UpdateSearchPaths
 
         private VProperty GetGameInfo()
         {
-            var info = VdfConvert.Deserialize(File.ReadAllText(_path, Encoding.UTF8), VdfSerializerSettings.Common);
+            var fileText = File.ReadAllText(_path, Windows1252);
+            var info = EnableFormatting ? VdfConvert.Deserialize(fileText, VdfSerializerSettings.Common) : VdfConvert.Deserialize(fileText, VdfSerializerSettings.Default);
             return info;
         }
 
@@ -53,8 +59,8 @@ namespace UpdateSearchPaths
 
         private void WriteGameInfo(VToken info)
         {
-            var updated = VdfConvert.Serialize(info, VdfSerializerSettings.Common);
-            File.WriteAllText(_path, updated, Encoding.UTF8);
+            var updated = EnableFormatting ? VdfConvert.Serialize(info, VdfSerializerSettings.Common) : VdfConvert.Serialize(info, VdfSerializerSettings.Default);
+            File.WriteAllText(_path, updated, Windows1252);
         }
 
         public void DisableGame(params string[] games)
