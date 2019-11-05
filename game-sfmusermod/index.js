@@ -2,7 +2,6 @@
 const path = require('path');
 const { fs, log, util } = require('vortex-api');
 const winapi = require('winapi-bindings');
-// const kv = require('./keyvalues')
 
 const GAME_ID = 'sfm'
 const STEAMAPP_ID = 1840;
@@ -10,15 +9,16 @@ let GAME_PATH = '';
 
 const types = ['materials', 'models', 'maps', 'media', 'scripts', 'settings', 'sound']
 
+
 function main(context) {
     //This is the main function Vortex will run when detecting the game extension. 
     context.registerGame({
         id: GAME_ID,
-        name: 'Source Filmmaker (usermod)',
+        name: 'Source Filmmaker',
         mergeMods: true,
         queryPath: findGame,
-        supportedTools: [],
-        queryModPath: () => 'game/usermod',
+        supportedTools: tools,
+        queryModPath: () => 'game',
         logo: 'gameart.png',
         executable: () => 'game/sfm.exe',
         requiredFiles: [
@@ -28,6 +28,7 @@ function main(context) {
         setup: prepareForModding,
         environment: {
             SteamAPPId: STEAMAPP_ID.toString(),
+            gamepath: GAME_PATH
         },
         details: {
             steamAppId: STEAMAPP_ID
@@ -37,15 +38,29 @@ function main(context) {
     return true
 }
 
+const tools = [
+    {
+        id: 'USPU',
+        name: 'Usermod Search Paths Updater',
+        shortName: 'USPU',
+        executable: () => 'uspu.exe',
+        requiredFiles: [
+            'uspu.exe'
+        ],
+        parameters: ['enable-all', GAME_PATH],
+        relative: true,
+        shell: true,
+        exclusive: true
+    }
+]
+
 function findGame() {
     return util.steam.findByAppId(STEAMAPP_ID.toString())
         .then(game => game.gamePath);
-    // GAME_PATH = gamePath;
-    // return GAME_PATH;
 }
 
 function prepareForModding(discovery) {
-    let gamePath = path.join(discovery.path, 'game', 'usermod')
+    let gamePath = path.join(discovery.path, 'game', 'vortex')
     GAME_PATH = gamePath;
     return fs.ensureDirWritableAsync(gamePath, () => Promise.resolve());
 }
@@ -60,64 +75,25 @@ function testSupportedContent(files, gameId) {
 }
 
 function installContent(files, destinationPath, gameId, progressDelegate) {
-    var modName = path.basename(destinationPath).split('.').slice(0, -1).join('.');
-    // log('debug', 'installing mod', { dest: destinationPath, name: modName });
+    // var modName = path.basename(destinationPath).split('.').slice(0, -1).join('.');
     //basically need to keep descending until I find [maps/materials/media/models/scripts/settings/sound]
-    let root = path.dirname(files.find(f => types.some(t => path.dirname(f).toLowerCase().indexOf(t) !== -1)));
-    let parent = path.dirname(root);
-    log('debug', 'found mod root', { root: root, parent: parent });
-    const instructions = getInstructions(root, parent, files);
-    progressDelegate(50);
-    // addSearchPath(modName);
-    // var obj = kv.decode(fs.readFileSync(filePath, 'utf8'));
-    // obj.GameInfo.FileSystem.SearchPaths.push({ "Game": modName})
-    // fs.writeFileSync(filePath, kv.encode(obj));
-    return Promise.resolve({ instructions });
-}
-
-function getInstructions(root, parent, files) {
-    if (parent !== '.') {
-        const filtered = files.filter(file => ((file.indexOf(root) !== -1) && (!file.endsWith(path.sep))));
-        const instructions = filtered.map(file => {
-            const destination = file.substr(file.toLowerCase().indexOf(root) + root.length)
-            return {
-                type: 'copy',
-                source: file,
-                destination: destination
-                // destination: file.replace(root, '')
-            }
-        });
-        return instructions;
-    } else {
-        const instructions = files.map(file => {
-            // const destination = file.substr(file.toLowerCase().indexOf(root) + root.length)
-            return {
-                type: 'copy',
-                source: file,
-                destination: file
-                // destination: file.replace(root, '')
-            }
-        });
-        return instructions;
-    }
-}
-
-function addSearchPath(modName) {
-    try {
-        var filePath = path.join(GAME_PATH, 'gameinfo.txt');
-        // fs.copyFile(filePath, path.join(GAME_PATH, 'gameinfo.txt.bak'));
-        log('debug', 'attempting to read GameInfo KV file', { file: filePath });
-        var lines = fs.readFileSync(filePath, 'utf8').split("\n");
-        if (lines.findIndex(l => l.includes(modName)) == -1) {
-            var pathsLine = lines.findIndex(l => l.trim() == "\"SearchPaths\"");
-            lines.splice(pathsLine + 3, 0, lines[pathsLine + 2].replace("|gameinfo_path|.", modName));
-            fs.writeFileSync(filePath, lines.join('\n'))
-        } else {
-            log('debug', 'mod already found in usermod paths!');
+    let firstType = path.dirname(files.find(f => types.some(t => path.dirname(f).toLowerCase().indexOf(t) !== -1)));
+    let root = path.dirname(firstType);
+    //firstType is the first primitive we found (i.e. maps or whatever)
+    //root is that directory's parent, which might include more than one primitive
+    const filtered = files.filter(file => (((root == "." ? true : (file.indexOf(root) !== -1)) && (!file.endsWith(path.sep)))));
+    log('debug', 'filtered non-rooted files', { root: root, candidates: filtered });
+    const instructions = filtered.map(file => {
+        // log('debug', 'mapping file to instruction', { file: file, root: root });
+        const destination = file.substr(firstType.indexOf(path.basename(firstType)));
+        return {
+            type: 'copy',
+            source: file,
+            // I don't think ⬇ conditional is needed, but frankly it works now and I'm afraid to touch it.
+            destination: root == "." ? file : destination
         }
-    } catch {
-        log('warning', 'errors encountered while attempting to enable the mod. You may need to change usermod search paths to enable your mod!')
-    }
+    });
+    return Promise.resolve({ instructions });
 }
 
 module.exports = {
