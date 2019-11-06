@@ -15,7 +15,7 @@ function main(context) {
     context.registerGame({
         id: GAME_ID,
         name: 'Source Filmmaker',
-        mergeMods: true,
+        mergeMods: false,
         queryPath: findGame,
         supportedTools: tools,
         queryModPath: () => 'game',
@@ -47,7 +47,7 @@ const tools = [
         requiredFiles: [
             'uspu.exe'
         ],
-        parameters: ['enable-all', GAME_PATH],
+        parameters: ['enable-all', "."],
         relative: true,
         shell: true,
         exclusive: true
@@ -60,7 +60,7 @@ function findGame() {
 }
 
 function prepareForModding(discovery) {
-    let gamePath = path.join(discovery.path, 'game', 'vortex')
+    let gamePath = path.join(discovery.path, 'game', 'usermod')
     GAME_PATH = gamePath;
     return fs.ensureDirWritableAsync(gamePath, () => Promise.resolve());
 }
