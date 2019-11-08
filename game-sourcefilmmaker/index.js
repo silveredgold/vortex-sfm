@@ -90,7 +90,7 @@ function installContent(files, destinationPath, gameId, progressDelegate) {
             type: 'copy',
             source: file,
             // I don't think ⬇ conditional is needed, but frankly it works now and I'm afraid to touch it.
-            destination: root == "." ? file : destination
+            destination: `vortex/${root == "." ? file : destination}`
         }
     });
     return Promise.resolve({ instructions });
