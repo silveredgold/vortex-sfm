@@ -44,6 +44,9 @@ jobs:
       uses: softprops/action-gh-release@v1
       if: startsWith(github.ref, 'refs/tags/')
       with: 
-        files: SearchPathsUpdater/uspu/uspu.exe
+        files: |
+          SearchPathsUpdater/uspu/uspu.exe
+          extension/game-sourcefilmmaker.zip
+          extension/game-sourcefilmmaker-alt.zip
       env:
         GITHUB_TOKEN: ${{ secrets.TOKEN }}
