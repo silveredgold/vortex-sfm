@@ -23,8 +23,10 @@ namespace UpdateSearchPaths
                 c.AddCommand<DisableAllCommand>("disable-all");
                 c.AddCommand<DisableSingleCommand>("disable");
             });
-            return app.Run(args);
-            return 0;
+            var exit = app.Run(args);
+            Console.WriteLine("Press any key to exit...");
+            Console.ReadKey();
+            return exit;
         }
     }
 
