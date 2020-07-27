@@ -1,6 +1,7 @@
 ---
 title: "Install Modes"
 weight: 31
+anchor: "modes"
 ---
 
 Before you get to installing your favourite mod files, there's one more thing you should know about: install modes.

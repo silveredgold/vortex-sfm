@@ -1,6 +1,6 @@
 ---
-title: "Frequently Asked Questions"
-linkTitle: "FAQ"
+title: "FAQ"
+anchor: "faq"
 weight: 50
 ---
 

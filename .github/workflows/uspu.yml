@@ -25,11 +25,11 @@ jobs:
       with:
         name: uspu
         path: tools/SearchPathsUpdater/uspu
-    - name: Release
-      uses: softprops/action-gh-release@v1
-      with: 
-        name: 'USPU CI Build'
-        files: |
-          SearchPathsUpdater/uspu/uspu.exe
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    # - name: Release
+    #   uses: softprops/action-gh-release@v1
+    #   with: 
+    #     name: 'USPU CI Build'
+    #     files: |
+    #       SearchPathsUpdater/uspu/uspu.exe
+    #   env:
+    #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -1,6 +1,7 @@
 ---
 title: "Search Paths"
 weight: 33
+anchor: "search-paths"
 ---
 
 As with any mod installed for SFM, whether manually or using SFM for Vortex, you will need to tell SFM about your new mod. You can do this manually or try the experimental auto-update.

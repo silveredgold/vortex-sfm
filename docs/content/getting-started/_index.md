@@ -2,8 +2,7 @@
 title: "Getting Started"
 linkTitle: "Getting Started"
 weight: 10
-# description: >
-#   Getting
+anchor: "getting-started"
 ---
 
 Getting started with SFM for Vortex is pretty easy: install the extension, relaunch Vortex then install mods from any archive file.

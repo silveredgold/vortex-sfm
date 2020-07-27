@@ -1,8 +1,7 @@
 ---
 title: "Installation"
 weight: 20
-description: >
-  Installing the extension
+anchor: "installation"
 ---
 Installing SFM for Vortex is a simple process, but make sure to follow the instructions closely to prevent any issues with the extension later on.
 

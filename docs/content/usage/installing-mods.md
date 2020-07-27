@@ -1,6 +1,7 @@
 ---
 title: "Installing Mods"
 weight: 32
+anchor: "modes"
 ---
 
 Now that Vortex is fully set up, download any mods you want to install. Mod files should be the original mod archive files (*.rar, *.zip, *.7z etc).

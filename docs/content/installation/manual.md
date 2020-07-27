@@ -2,6 +2,7 @@
 title: "Manual"
 linkTitle: "Manual Installation"
 weight: 23
+anchor: "installation-manual"
 ---
 
 {{< block warn >}}

@@ -8,7 +8,7 @@ The vortex-sfm project is intended to simplify managing external assets for SFM 
 
 > Full details of the extension project and how to get started are available at [vortex-sfm.silveredgold.vip](vortex-sfm.silveredgold.vip)
 
-The project has been rewritten to remove the need for multiple Vortex extensions and the USPU tool has now been deprecated in favour of a new feature included in the latest versions of the Vortex extension (thanks again agc93 for helping out).
+The project has been rewritten to remove the need for multiple Vortex extensions and the USPU tool has now been deprecated in favour of a new feature included in the latest versions of the Vortex extension (thanks agc93 for helping out).
 
 ### Vortex Extension
 

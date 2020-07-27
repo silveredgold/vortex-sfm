@@ -2,8 +2,7 @@
 title: "Introduction"
 linkTitle: "Introduction"
 weight: 1
-description: >
-  A basic introduction to SFM for Vortex
+anchor: "introduction"
 ---
 vortex-sfm is a Vortex extension that adds support for Source Filmmaker. This allows for managing (non-Workshop) mods and assets using the Vortex mod manager.
 

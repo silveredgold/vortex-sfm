@@ -2,6 +2,7 @@
 title: "Automated Installation"
 linkTitle: "Quick Start"
 weight: 21
+anchor: "installation-quick"
 ---
 
 {{< block tip >}}

@@ -2,6 +2,7 @@
 title: "Install from Archive"
 linkTitle: "Install from Archive"
 weight: 22
+anchor: "installation-archive"
 ---
 
 If Vortex fails to install the extension for some reason, you can also download and install an archive of the extension files.

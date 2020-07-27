@@ -1,6 +1,7 @@
 ---
 title: "Support"
 weight: 40
+anchor: "support"
 ---
 
 This is just a community-backed open-source project, not an officially-supported Vortex component. As such, support is best-effort.
