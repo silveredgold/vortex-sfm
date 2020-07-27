@@ -10,7 +10,8 @@
         "outDir": "./out",
         "jsx": "react",
         "sourceMap": false,
-        "esModuleInterop": true
+        "esModuleInterop": true,
+        "resolveJsonModule": true //I don't know what this does, but Code suggested it
     },
     "exclude": [
         "node_modules"

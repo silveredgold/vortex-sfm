@@ -4,12 +4,14 @@
  */
 import { fs, log, util, selectors } from "vortex-api";
 import path = require('path');
-import { IExtensionContext, IDiscoveryResult, ProgressDelegate, IInstallResult, IExtensionApi, IGameStoreEntry, IMod, IDeployedFile, IGame, IInstruction, IProfile, ISupportedResult } from 'vortex-api/lib/types/api';
+import { IExtensionContext, IDiscoveryResult, ProgressDelegate, IExtensionApi, IGameStoreEntry, IMod, IDeployedFile, IGame, IInstruction, IProfile, ISupportedResult, IDialogResult } from 'vortex-api/lib/types/api';
 import { isActiveGame } from "vortex-ext-common";
+import * as semver from "semver";
 
 import { settingsReducer } from "./settings";
 import SfmSettings from "./SfmSettings";
 import { readGameInfoFile, addGames, writeGameInfoFile } from "./paths";
+import messages from './messages.json';
 
 const GAME_ID = 'sfm'
 const STEAMAPP_ID = 1840;
@@ -39,6 +41,25 @@ function main(context: IExtensionContext) {
             .filter((id: string) => profiles[id].gameId === GAME_ID);
         return gameProfiles && gameProfiles.length > 0;
     }
+    context.registerMigration((oldVersion) => {
+        const extVersion = '0.1.0'
+        if (semver.gte(oldVersion, extVersion)) {
+            return Promise.resolve();
+        }
+        const state = context.api.store.getState();
+        const mods = util.getSafe(state, ['persistent', 'mods', GAME_ID], {});
+        const hasMods = Object.keys(mods).length > 0;
+        if (!isManaged(context.api) || !hasMods) {
+            return Promise.resolve();
+        } else {
+            return new Promise((resolve) => {
+                var id = sendUpdateNotification(context.api, () => {
+                    context.api.dismissNotification(id);
+                    resolve();
+                });
+            });
+        }   
+    })
     context.once(() => {
         context.api.onAsync('did-deploy', 
             async (profileId, newDeployment: { [modType: string]: IDeployedFile[] }): Promise<void> => {
@@ -94,12 +115,12 @@ function main(context: IExtensionContext) {
         },
     });
 
-    context.registerModType('sfm-vortex', 101, 
+    context.registerModType('sfm-vortex', 100, 
         gameId => gameId === GAME_ID, 
         (g) => getGamePath(g, true), 
         (inst) => testModType(context.api, inst, 'merged'),
         {name: 'Merged', mergeMods: true});
-    context.registerModType('sfm-usermod', 100,
+    context.registerModType('sfm-usermod', 101,
         gameId => gameId === GAME_ID,
         (g) => getGamePath(g, false),
         (inst) => testModType(context.api, inst, 'isolated'),
@@ -125,16 +146,16 @@ export function testModType(api: IExtensionApi, instructions: IInstruction[], mo
 
 const tools = [
     {
-        id: 'USPU',
-        name: 'Usermod Search Paths Updater',
-        shortName: 'USPU',
-        executable: () => 'uspu.exe',
+        id: 'sfm-sdk',
+        name: 'SFM SDK',
+        shortName: 'SDK',
+        executable: () => path.join('game', 'bin', 'qsdklauncher.exe'),
         requiredFiles: [
-            'uspu.exe'
+            path.join('game', 'bin', 'qsdklauncher.exe'),
+            path.join('game', 'sfm.exe')
         ],
-        parameters: ['enable-all', "."],
         relative: true,
-        shell: true,
+        shell: false,
         exclusive: true
     }
 ];
@@ -186,6 +207,30 @@ function installContent(api: IExtensionApi, files: string[], destinationPath: st
 
 export function testFiles(files: string[]): boolean {
     return files.some(f => types.some(t => path.dirname(f).toLowerCase().indexOf(t) !== -1));
+}
+
+function sendUpdateNotification(api: IExtensionApi, cb: () => void): string {
+    return api.sendNotification({
+        type: 'warning',
+        title: 'SFM Support extension updated!',
+        message: 'The latest version of SFM Support includes some important changes',
+        noDismiss: true,
+        actions: [
+            {
+                title: 'See More',
+                action: (dismiss) => {
+                    api.showDialog('info', 'SFM Support for Vortex', {
+                        bbcode: messages.UpgradeNotification ,
+                    }, [
+                        { label: 'Close'},
+                    ]).then((res: IDialogResult) => {
+                        dismiss();
+                        cb?.();
+                    });
+                },
+            }
+        ]
+    })
 }
 
 module.exports = {

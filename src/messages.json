@@ -1,0 +1,3 @@
+{
+    "UpgradeNotification": "The latest version of SFM Support is a major rebuild of the original (admittedly not very good) extension, and has changed how mods are handled.[br][/br][br][/br]Rather than using two separate versions of the extension, this version controls how mods are installed using mod types. You can change the default in Settings to either 'Merged' or 'Isolated' (previously the Alternate mode).[br][/br]Merged mode will deploy all your installed mods as a single merged SFM 'mod' while Isolated will deploy installed mods in their own directories that SFM will see as separate mods.[br][/br][br][/br]There's more details available at [url=https://vortex-sfm.silveredgold.vip]vortex-sfm.silveredgold.vip[/url]"
+}
