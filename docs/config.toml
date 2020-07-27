@@ -1,0 +1,28 @@
+baseURL = "/"
+languageCode = "en-au"
+
+title = "vortex-sfm"
+theme = "kraiklyn"
+
+pygmentsCodeFences = true
+pygmentsStyle = "monokailight"
+
+[params]
+#externalTitle = "SFM for Vortex"
+sidebarColor = "default"
+customCss = []
+
+[[menu.shortcuts]]
+name = "Github"
+url = "https://github.com/silveredgold/vortex-sfm"
+weight = 10
+
+[[menu.shortcuts]]
+name = "Nexus Mods"
+url = "https://www.nexusmods.com/site/mods/64"
+weight = 20
+
+[[menu.shortcuts]]
+name = "Vortex"
+url = "https://www.nexusmods.com/about/vortex/"
+weight = 30
