@@ -6,6 +6,8 @@ on:
     paths-ignore:
       - "tools/**"
       - ".github/workflows/uspu.yml"
+      - "docs/**"
+      - ".github/workflows/docs.yml"
     tags:
       - 'v*.*.*'
   pull_request:

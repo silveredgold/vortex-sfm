@@ -10,7 +10,7 @@ import { InstallMode } from '.';
 const { HelpBlock, FormGroup, ControlLabel, InputGroup, FormControl } = require('react-bootstrap');
 
 interface IConnectedProps {
-    defaultMode: string;
+    defaultMode: InstallMode;
     enablePathsUpdate: boolean;
 }
 
@@ -67,7 +67,9 @@ class SfmSettings extends ComponentEx<IProps, {}> {
     private selectChannel = (evt) => {
         const target: HTMLSelectElement = evt.target as HTMLSelectElement;
         if (['merged', 'isolated'].indexOf(target.value) !== -1) {
-          this.props.onChangedDefaultMode(target.value as any);
+            var newMode = ['merged', 'isolated'].find(m => m.toLowerCase() == target.value.toLowerCase()) as InstallMode;
+            log('debug', 'changing sfm install mode', {newMode});
+            this.props.onChangedDefaultMode(newMode);
         } else {
           log('error', 'invalid sfm install mode', target.value);
         }
@@ -87,7 +89,7 @@ class SfmSettings extends ComponentEx<IProps, {}> {
 function mapStateToProps(state: IState): IConnectedProps {
     // log('debug', 'mapping beatvortex state to props');
     return {
-        defaultMode: util.getSafe<InstallMode>(state.settings, ['vortex-sfm', 'defaultMode'], 'merged'),
+        defaultMode: util.getSafe(state.settings, ['vortex-sfm', 'defaultMode'], 'merged'),
         enablePathsUpdate: util.getSafe(state.settings, ['vortex-sfm', 'updatePaths'], false)
     };
 }
@@ -95,7 +97,7 @@ function mapStateToProps(state: IState): IConnectedProps {
 function mapDispatchToProps(dispatch: ThunkDispatch<any, null, Redux.Action>): IActionProps {
     // log('debug', 'mapping beatvortex dispatch to props', {ownProps});
     return {
-        onChangedDefaultMode: (mode: InstallMode) => {
+        onChangedDefaultMode: (mode: string) => {
             return dispatch(changeDefaultMode(mode));
         },
         onEnablePathsUpdate: (enable: boolean) => {
