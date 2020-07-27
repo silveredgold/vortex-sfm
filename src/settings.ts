@@ -6,13 +6,20 @@ import { InstallMode } from ".";
 export const changeDefaultMode =
     createAction('SFM_CHANGE_MODE', (defaultMode: InstallMode) => (defaultMode));
 
+export const enableSearchPathsUpdate =
+    createAction('SFM_UPDATE_PATHS', (enable: boolean) => enable);
+
 export const settingsReducer: IReducerSpec = {
     reducers: {
         [changeDefaultMode as any]: (state, payload: string) => {
             return util.merge(state, ['defaultMode'], payload);
+        },
+        [enableSearchPathsUpdate as any]: (state, payload: boolean) => {
+            return util.setSafe(state, ['updatePaths'], payload);
         }
     },
     defaults: {
-        defaultMode: 'merged'
+        defaultMode: 'merged',
+        updatePaths: false
     }
 };

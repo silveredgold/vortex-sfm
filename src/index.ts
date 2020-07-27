@@ -5,9 +5,11 @@
 import { fs, log, util, selectors } from "vortex-api";
 import path = require('path');
 import { IExtensionContext, IDiscoveryResult, ProgressDelegate, IInstallResult, IExtensionApi, IGameStoreEntry, IMod, IDeployedFile, IGame, IInstruction, IProfile, ISupportedResult } from 'vortex-api/lib/types/api';
+import { isActiveGame } from "vortex-ext-common";
 
 import { settingsReducer } from "./settings";
 import SfmSettings from "./SfmSettings";
+import { readGameInfoFile, addGames, writeGameInfoFile } from "./paths";
 
 const GAME_ID = 'sfm'
 const STEAMAPP_ID = 1840;
@@ -38,6 +40,36 @@ function main(context: IExtensionContext) {
         return gameProfiles && gameProfiles.length > 0;
     }
     context.once(() => {
+        context.api.onAsync('did-deploy', 
+            async (profileId, newDeployment: { [modType: string]: IDeployedFile[] }): Promise<void> => {
+                if (isActiveGame(context.api, GAME_ID)) {
+                    var enabled = util.getSafe(context.api.getState().settings, ['vortex-sfm', 'updatePaths'], false);
+                    if (enabled) {
+                        //path updates are enabled
+                        var paths = ['vortex'];
+                        if (newDeployment['sfm-usermod'] && newDeployment['sfm-usermod'].length > 0) {
+                            //we have some isolated mods being deployed
+                            var mods = util.getSafe(context.api.getState().persistent, ['mods', GAME_ID], {} as { [modId: string]: IMod; });
+                            var isolatedMods = [...new Set(newDeployment['sfm-usermod'].map(f => mods[f.source]))];
+                            if (isolatedMods && isolatedMods.length > 0) {
+                                //we matched up deployed mod files to an installed mod
+                                var modNames = isolatedMods.map(m => m.id);
+                                paths = paths.concat(modNames);
+                            }
+                        }
+                        log('debug', 'enabling search paths for detected mods', {paths});
+                        var discoveryPath = (context.api.getState().settings.gameMode.discovered[GAME_ID]).path;
+                        var infoPath = path.join(discoveryPath, 'game', 'usermod', 'gameinfo.txt');
+                        var info = await readGameInfoFile(infoPath);
+                        info = await addGames(info, paths);
+                        await writeGameInfoFile(infoPath, info);
+                        return Promise.resolve();
+                    } else {
+                        log('debug', 'automatic path updates disabled. skipping!');
+                    }
+                }
+            } 
+        );
         
     });
     context.registerGame({
@@ -79,7 +111,7 @@ function main(context: IExtensionContext) {
         (files, gameId) => testSupportedContent(files, gameId),
         (files, destination, gameId, progress) => installContent(context.api, files, destination, gameId, progress));
 
-    context.registerReducer(['vortex-sfm'], settingsReducer);
+    context.registerReducer(['settings', 'vortex-sfm'], settingsReducer);
     context.registerSettings('Mods', SfmSettings, () => {t: context.api.translate}, () => isManaged(context.api), 100);
 
     return true;
