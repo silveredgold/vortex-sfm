@@ -23,7 +23,7 @@
     "@types/react-bootstrap": "^1.0.0",
     "@types/redux": "^3.6.0",
     "@types/redux-thunk": "^2.1.0",
-    "axios": "^0.19.2",
+    "axios": "^0.21.1",
     "bluebird": "^3.5.5",
     "copyfiles": "^2.3.0",
     "easy-keyvalues": "^0.1.5",
